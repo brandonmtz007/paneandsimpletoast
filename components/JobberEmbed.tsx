@@ -1,44 +1,29 @@
+import Script from "next/script";
 import { siteConfig } from "@/lib/site-config";
 
-// Renders the Jobber "Request a Quote" form once NEXT_PUBLIC_JOBBER_REQUEST_URL is set
-// (see .env.example / README for how to get that link from Jobber). Until then, it shows
-// a simple direct-contact fallback so the Contact page is never broken.
+// Jobber's own embedded "Request a Quote" form (Settings > Requests > your
+// form > "..." > Share links > Get embed code). The div below is Jobber's
+// mount point; the script fills it in and handles submissions client-side.
+//
+// Note: if you view-source your live site and see an extra script tag
+// pointing at /cdn-cgi/scripts/.../email-decode.min.js, that's Cloudflare's
+// own email-obfuscation feature rewriting mailto links on the page — it's
+// injected automatically at the edge and isn't part of the Jobber embed, so
+// there's nothing to add for it here.
 export default function JobberEmbed() {
-  if (!siteConfig.jobberRequestUrl) {
-    return (
-      <div className="rounded-2xl border border-dashed border-glass-mid/40 bg-suds p-8 text-center">
-        <p className="font-display text-2xl text-glass-deep">Request a free quote</p>
-        <p className="mx-auto mt-2 max-w-md text-sm text-ink/70">
-          Online quote requests will appear here once the Jobber form is connected. In the
-          meantime, reach out directly and we&apos;ll get right back to you.
-        </p>
-        <div className="mt-5 flex flex-col items-center justify-center gap-3 sm:flex-row">
-          <a
-            href={`mailto:${siteConfig.email}`}
-            className="rounded-full bg-sunlit px-6 py-3 text-sm font-semibold text-ink hover:bg-sunlit/90"
-          >
-            Email {siteConfig.email}
-          </a>
-          {siteConfig.phone && (
-            <a
-              href={`tel:${siteConfig.phone}`}
-              className="rounded-full border border-glass-mid px-6 py-3 text-sm font-semibold text-glass-deep hover:bg-white"
-            >
-              Call {siteConfig.phone}
-            </a>
-          )}
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="overflow-hidden rounded-2xl border border-glass-light/30 bg-white shadow-sm">
-      <iframe
-        src={siteConfig.jobberRequestUrl}
-        title="Request a quote"
-        className="h-[900px] w-full"
-        loading="lazy"
+    <div className="rounded-2xl border border-glass-light/30 bg-white p-6 shadow-sm">
+      <div id={siteConfig.jobber.embedId} />
+      <link
+        rel="stylesheet"
+        href="https://d3ey4dbjkt2f6s.cloudfront.net/assets/external/work_request_embed.css"
+        media="screen"
+      />
+      <Script
+        src="https://d3ey4dbjkt2f6s.cloudfront.net/assets/static_link/work_request_embed_snippet.js"
+        strategy="afterInteractive"
+        clienthub_id={siteConfig.jobber.embedId}
+        form_url={siteConfig.jobber.formUrl}
       />
     </div>
   );
