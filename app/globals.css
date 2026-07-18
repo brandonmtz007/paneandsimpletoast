@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Design notes (for future edits):
+  - Palette: Ink #0B1626, Deep Glass #164567, Glass Mid #3E82AC, Glass Light #7FB4D6,
+    Foam #F4FAFF, Sunlit accent #E2A233 (used sparingly, on primary CTAs only).
+  - Display face: Yellowtail (brush script, echoes the business card wordmark) — used
+    only for the logo and section headlines, never for body copy or long text.
+  - Body face: Work Sans — carries all reading copy.
+  - Signature moment: the homepage hero re-enacts an actual squeegee pass. A "grime"
+    layer covers the glass-blue gradient on load, and a squeegee blade sweeps across,
+    clip-path shrinking the grime away in sync with the blade's travel. This is the
+    one bold animated moment on the site — everything else stays quiet on purpose.
+*/
+
+:root {
+  --font-display: "Yellowtail", cursive;
+  --font-body: "Work Sans", system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  color: #0b1626;
+  background-color: #f4faff;
+}
+
+/* ---------- Hero squeegee-wipe signature ---------- */
+
+.hero-stage {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.hero-grime {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      112deg,
+      rgba(255, 255, 255, 0.4) 0px,
+      rgba(255, 255, 255, 0.4) 3px,
+      rgba(255, 255, 255, 0.08) 3px,
+      rgba(255, 255, 255, 0.08) 9px,
+      transparent 9px,
+      transparent 18px
+    ),
+    linear-gradient(160deg, rgba(11, 22, 38, 0.55), rgba(11, 22, 38, 0.28));
+  clip-path: inset(0 0% 0 0);
+  animation: hero-wipe-reveal 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.5s both;
+}
+
+.hero-squeegee {
+  position: absolute;
+  top: -2%;
+  bottom: -2%;
+  width: 1.6%;
+  min-width: 18px;
+  z-index: 3;
+  left: -4%;
+  pointer-events: none;
+  border-radius: 3px;
+  background: linear-gradient(
+    90deg,
+    rgba(244, 250, 255, 0.95),
+    rgba(210, 219, 227, 0.98) 45%,
+    rgba(140, 151, 165, 1) 70%,
+    rgba(70, 79, 90, 1)
+  );
+  box-shadow: 3px 0 16px rgba(0, 0, 0, 0.28);
+  animation: hero-squeegee-travel 1.6s cubic-bezier(0.65, 0, 0.35, 1) 0.5s both;
+}
+
+.hero-squeegee::before {
+  content: "";
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 26px;
+  border-radius: 4px;
+  background: #3a4249;
+}
+
+@keyframes hero-wipe-reveal {
+  from {
+    clip-path: inset(0 0% 0 0);
+  }
+  to {
+    clip-path: inset(0 100% 0 0);
+  }
+}
+
+@keyframes hero-squeegee-travel {
+  from {
+    left: -4%;
+    opacity: 1;
+  }
+  92% {
+    opacity: 1;
+  }
+  to {
+    left: 100%;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-grime {
+    animation: none;
+    clip-path: inset(0 100% 0 0);
+  }
+  .hero-squeegee {
+    animation: none;
+    opacity: 0;
+  }
+}
